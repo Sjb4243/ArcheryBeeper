@@ -1,6 +1,6 @@
 Archery Timer System 🎯
 
-This is an automated timer system designed for use in archery clubs, as the systems you can buy are prohibitively expensive, so this works as a basic version. Simply hook up to a monitor with a long cable and you'll be good to go. 
+This is an automated timer system designed for use in archery clubs, as the systems you can buy are prohibitively expensive (and my club is very poor), so this works as a basic version. Simply hook up to a monitor with a long cable and you'll be good to go. 
 
 To use (key presses): <br>
 1 - Initiates one shooting cycle <br>
