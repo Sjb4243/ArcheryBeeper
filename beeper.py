@@ -4,6 +4,8 @@ import sys
 import math
 import os
 
+#TODO set up a routine class that takes in functions and runs through them, allows for customisation
+
 
 #Object for drawing text on the screen, nothing much of note
 #Main thing is translating strings into actual positions for text in __get_pos__
@@ -29,7 +31,6 @@ class label:
             display_x= screen_width - self.render.get_width()
             display_y = 10
         if self.init_pos == "center":
-            print(self.render.get_rect(center=(screen_width // 2, screen_height // 2)))
             display_x, display_y, dummy1, dummy2 = self.render.get_rect(center=(screen_width // 2, screen_height // 2))
 
         return (display_x, display_y)
@@ -53,30 +54,31 @@ def get_max_font_size(text):
 
 def change_current_detail():
     global detail
+    print(f"Next detail: {detail}")
     #Switch the current detail to the opposite one
     detail = "CD" if detail == "AB" else "AB"
 
-def shoot(sound):
+def shoot(sound, final = False):
     global detail
     #Get to waiting line, 2 beeps
     play_sound(sound, 2, 0.5)
     #This is to track seconds
     start_ticks = pygame.time.get_ticks()
     #Start the countdown, if it returns false (escape was pressed) go backl to main menu after swapping detail
-    if not countdown(start_ticks, 10, "walking"):
+    exited = countdown(start_ticks, 10, "walking")
+    if not exited:
+        time.sleep(1)
+        screen.fill(GREEN_COLOUR)
+        #Start shooting beep
+        play_sound(sound, 1, 0.5)
+        #Same thing as before, but 120 seconds
+        start_ticks = pygame.time.get_ticks()
+        countdown(start_ticks, 120, "shooting")
+    if not final:
         change_current_detail()
-        main(detail)
-    time.sleep(1)
-    screen.fill(GREEN_COLOUR)
-    #Start shooting beep
-    play_sound(sound, 1, 0.5)
-    #Same thing as before, but 120 seconds
-    start_ticks = pygame.time.get_ticks()
-    if not countdown(start_ticks, 120, "shooting"):
-        change_current_detail()
-        main(detail)
-    change_current_detail()
-    pygame.event.clear()
+    else:
+        pygame.event.clear()
+        return False
 
 
 
@@ -86,14 +88,15 @@ def countdown(start, length, type = None):
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_SPACE:
                     screen.fill(DEFAULT_COLOUR)
                     pygame.display.update()
                     pygame.event.clear()
-                    change_current_detail()
                     done = True
+                    return True
+                elif event.key == pygame.K_ESCAPE:
                     main(detail)
-                    return False
+                    return True
 
         screen.fill(DEFAULT_COLOUR)
         #Get the amount of seconds that have passed
@@ -124,7 +127,7 @@ def countdown(start, length, type = None):
     screen.fill(DEFAULT_COLOUR)
     pygame.display.update()
     pygame.event.clear()
-    return True
+    return False
 
 def play_sound(sound, times, delay):
     #Loop through however many times you want the sound to play, play it and then start a delay
@@ -141,45 +144,75 @@ def collect(sound):
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+                if event.key == pygame.K_SPACE:
                     screen.fill(DEFAULT_COLOUR)
                     pygame.display.update()
                     pygame.event.clear()
                     done = True
-                if event.key == pygame.K_2:
-                    shoot(sound)
-                    shoot(sound)
-                    done = True
-                elif event.key == pygame.K_1:
-                    shoot(sound)
-                    done = True
+
+
+def handle_keydown(event, queue, sound, detail):
+    if event.key == pygame.K_r:
+        process_queue(queue)
+    elif event.key == pygame.K_1:
+        shoot(sound)
+    elif event.key == pygame.K_c:
+        collect(sound)
+    elif event.key == pygame.K_d:
+        change_current_detail()
+    elif event.key == pygame.K_ESCAPE:
+        pygame.quit()
+        sys.exit()
+
+def process_queue(queue):
+    shot_already = False
+    for idx, (process, args) in enumerate(queue):
+        process(*args)
+        if idx < len(queue) - 1:
+            if queue[idx][0].__name__ == "shoot":
+                print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}(final)")
+            else:
+                print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}")
+            wait_for_space()
+        else:
+            print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
+            return False
+
+def wait_for_space():
+    ready = False
+    while not ready:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    ready = True
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
 def main(init):
     global detail
     detail = init
+    print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
     pygame.event.clear()
-    print(f"Current detail: {detail}")
+    print(f"Next detail: {detail}")
     screen.fill(DEFAULT_COLOUR)
     pygame.display.update()
     mp3 = [file for file in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))) if file.endswith("mp3")][0]
     sound = pygame.mixer.Sound(mp3)
+    queue = [
+        (shoot, (sound,)),  # Function and single argument
+        (shoot, (sound, True)),  # Function with two positional arguments, 'True' for final
+        (collect, (sound,)),  # Function and single argument
+    ]
     #Get the maximum allowed font size for the seconds, the detail size is a percentage of thhis
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_2:
-                    shoot(sound)
-                    shoot(sound)
-                elif event.key == pygame.K_1:
-                    shoot(sound)
-                elif event.key == pygame.K_c:
-                    collect(sound)
-                elif event.key == pygame.K_d:
-                    change_current_detail()
-                    print(f"Current detail: {detail}")
-                elif event.key == pygame.K_ESCAPE:
-                    sys.exit()
+                handle_keydown(event, queue, sound, detail)
+
 pygame.init()
 screen_info = pygame.display.Info()
 screen_width = screen_info.current_w
