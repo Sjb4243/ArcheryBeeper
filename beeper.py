@@ -4,9 +4,6 @@ import sys
 import math
 import os
 
-#TODO set up a routine class that takes in functions and runs through them, allows for customisation
-
-
 #Object for drawing text on the screen, nothing much of note
 #Main thing is translating strings into actual positions for text in __get_pos__
 class label:
@@ -200,9 +197,9 @@ def main(init):
     mp3 = [file for file in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))) if file.endswith("mp3")][0]
     sound = pygame.mixer.Sound(mp3)
     queue = [
-        (shoot, (sound,)),  # Function and single argument
-        (shoot, (sound, True)),  # Function with two positional arguments, 'True' for final
-        (collect, (sound,)),  # Function and single argument
+        (shoot, (sound,)),
+        (shoot, (sound, True)), 
+        (collect, (sound,)), 
     ]
     #Get the maximum allowed font size for the seconds, the detail size is a percentage of thhis
     while True:
