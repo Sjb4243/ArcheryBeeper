@@ -71,7 +71,7 @@ def shoot(sound, final = False):
         play_sound(sound, 1, 0.5)
         #Same thing as before, but 120 seconds
         start_ticks = pygame.time.get_ticks()
-        countdown(start_ticks, 20, "shooting")
+        exited = countdown(start_ticks, 20, "shooting")
     if not final:
         change_current_detail()
     if exited:
@@ -145,6 +145,7 @@ def collect(sound):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
                     screen.fill(DEFAULT_COLOUR)
                     pygame.display.update()
                     pygame.event.clear()
@@ -160,6 +161,8 @@ def handle_keydown(event, queue, sound, detail):
         collect(sound)
     elif event.key == pygame.K_d:
         change_current_detail()
+    elif event.key == pygame.K_HOME:
+        main(detail)
     elif event.key == pygame.K_ESCAPE:
         pygame.quit()
         sys.exit()
@@ -168,16 +171,13 @@ def process_queue(queue):
     for idx, (process, args) in enumerate(queue):
         exited_early = process(*args)
         if idx < len(queue) - 1:
+            print(f"Next detail {detail}")
             if queue[idx][0].__name__ == "shoot":
                 print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}(final)")
             else:
                 print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}")
-            print(exited_early)
-            if exited_early:
-                wait_for_space()
-        else:
-            print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
-            return False
+        if exited_early:
+            wait_for_space()
 
 def wait_for_space():
     ready = False
@@ -192,6 +192,7 @@ def wait_for_space():
 def main(init):
     global detail
     detail = init
+    print(f"Next detail: {detail}")
     print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
     pygame.event.clear()
     screen.fill(DEFAULT_COLOUR)
