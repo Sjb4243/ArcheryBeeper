@@ -51,9 +51,10 @@ def get_max_font_size(text):
 
 def change_current_detail():
     global detail
-    print(f"Next detail: {detail}")
     #Switch the current detail to the opposite one
     detail = "CD" if detail == "AB" else "AB"
+    print(f"Next detail: {detail}")
+
 
 def shoot(sound, final = False):
     global detail
@@ -191,15 +192,14 @@ def main(init):
     detail = init
     print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
     pygame.event.clear()
-    print(f"Next detail: {detail}")
     screen.fill(DEFAULT_COLOUR)
     pygame.display.update()
     mp3 = [file for file in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))) if file.endswith("mp3")][0]
     sound = pygame.mixer.Sound(mp3)
     queue = [
         (shoot, (sound,)),
-        (shoot, (sound, True)), 
-        (collect, (sound,)), 
+        (shoot, (sound, True)),
+        (collect, (sound,)),
     ]
     #Get the maximum allowed font size for the seconds, the detail size is a percentage of thhis
     while True:
