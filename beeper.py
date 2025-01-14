@@ -71,9 +71,12 @@ def shoot(sound, final = False):
         play_sound(sound, 1, 0.5)
         #Same thing as before, but 120 seconds
         start_ticks = pygame.time.get_ticks()
-        countdown(start_ticks, 120, "shooting")
+        countdown(start_ticks, 20, "shooting")
     if not final:
         change_current_detail()
+    if exited:
+        pygame.event.clear()
+        return True
     else:
         pygame.event.clear()
         return False
@@ -90,7 +93,6 @@ def countdown(start, length, type = None):
                     screen.fill(DEFAULT_COLOUR)
                     pygame.display.update()
                     pygame.event.clear()
-                    done = True
                     return True
                 elif event.key == pygame.K_ESCAPE:
                     main(detail)
@@ -163,15 +165,16 @@ def handle_keydown(event, queue, sound, detail):
         sys.exit()
 
 def process_queue(queue):
-    shot_already = False
     for idx, (process, args) in enumerate(queue):
-        process(*args)
+        exited_early = process(*args)
         if idx < len(queue) - 1:
             if queue[idx][0].__name__ == "shoot":
                 print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}(final)")
             else:
                 print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}")
-            wait_for_space()
+            print(exited_early)
+            if exited_early:
+                wait_for_space()
         else:
             print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
             return False
@@ -184,8 +187,7 @@ def wait_for_space():
                 if event.key == pygame.K_SPACE:
                     ready = True
                 elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
+                    main(detail)
 
 def main(init):
     global detail
