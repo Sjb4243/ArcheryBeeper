@@ -71,7 +71,7 @@ def shoot(sound, final = False):
         play_sound(sound, 1, 0.5)
         #Same thing as before, but 120 seconds
         start_ticks = pygame.time.get_ticks()
-        exited = countdown(start_ticks, 20, "shooting")
+        exited = countdown(start_ticks, 120, "shooting")
     if not final:
         change_current_detail()
     if exited:
