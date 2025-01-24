@@ -107,7 +107,7 @@ def countdown(start, length, type = None):
         else:
             display_number = 0
         #Orange if shooting + <30 seconds left, green if shooting, red otherwise
-        screen.fill(ORANGE_COLOUR if type == "shooting" and display_number <= 30 else GREEN_COLOUR if type == "shooting" else DEFAULT_COLOUR)
+        screen.fill(ORANGE_COLOUR if type == "shooting" and display_number <= length * 0.25 else GREEN_COLOUR if type == "shooting" else DEFAULT_COLOUR)
 
         #Mostly font stuff, this is the thing that may need tweaking on new displays
         #Display for seconds
@@ -145,11 +145,16 @@ def collect(sound):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    print(f"Main menu \n Press r for a full run \n press 1 for a single run \n press d to change detail ")
                     screen.fill(DEFAULT_COLOUR)
                     pygame.display.update()
                     pygame.event.clear()
                     done = True
+                if event.key == pygame.K_d:
+                    change_current_detail()
+                    next_detail_text = label(str(f"Next:{detail}"), "center", 400)
+                    screen.fill(DEFAULT_COLOUR)
+                    next_detail_text.display()
+                    pygame.display.update()
 
 
 def handle_keydown(event, queue, sound, detail):
@@ -170,6 +175,7 @@ def handle_keydown(event, queue, sound, detail):
 def process_queue(queue):
     for idx, (process, args) in enumerate(queue):
         exited_early = process(*args)
+        print(exited_early)
         if idx < len(queue) - 1:
             print(f"Next detail {detail}")
             if queue[idx][0].__name__ == "shoot":
@@ -177,7 +183,9 @@ def process_queue(queue):
             else:
                 print(f"Press space to continue to next process: {queue[idx + 1][0].__name__}")
         if exited_early:
-            wait_for_space()
+            time.sleep(2)
+        # if exited_early:
+        #     wait_for_space()
 
 def wait_for_space():
     ready = False
