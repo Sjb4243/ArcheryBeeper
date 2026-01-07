@@ -4,10 +4,10 @@ import math
 import os
 import pygame
 from Queue import Queue
-from Countdown import Countdown
-from Action import Action
-from Label import Label
-from handle_keydown import handle_keydown
+from src.Countdown import Countdown
+from src.Action import Action
+from src.Label import Label
+from src.handle_keydown import handle_keydown
 from maps import generate_keymaps
 #Screen object for calculating a lot of font sizes
 #Also has some wrapper methods to make calling them a bit easier
