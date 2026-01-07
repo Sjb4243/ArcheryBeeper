@@ -1,5 +1,4 @@
 from handle_keydown import handle_keydown
-from maps import countdown_keys
 import pygame
 from Label import Label
 
@@ -15,14 +14,12 @@ class Countdown:
         while not done:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    state = handle_keydown(event, countdown_keys)
-                    if state == "skip":
-                        return "skip"
-                    if state == "pause":
-                        print(f"Pause requested/cancelled")
-                        appstate.pause = False if appstate.pause else True
-                    if state == "exit":
-                        return "exit"
+                    #keys are capable of interacting with various flags on appstate
+                    handle_keydown(event, appstate.countdown_keys)
+                    if appstate.skip:
+                        return
+                    if appstate.exit:
+                        return
 
 
             seconds = (pygame.time.get_ticks() - start) / 1000

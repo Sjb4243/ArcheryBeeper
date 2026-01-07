@@ -1,5 +1,6 @@
 import pygame
 
+#Label class for writing text to screen
 class Label:
     def __init__(self, text, pos, size,screen, colour = (255, 255, 255)):
         self.text = text

@@ -3,11 +3,14 @@ import sys
 import math
 import os
 import pygame
-from maps import make_main_menu_keys
+from Queue import Queue
+from Countdown import Countdown
+from Action import Action
 from Label import Label
 from handle_keydown import handle_keydown
-
-
+from maps import generate_keymaps
+#Screen object for calculating a lot of font sizes
+#Also has some wrapper methods to make calling them a bit easier
 class Screen:
     def __init__(self):
         self.screen, self.screenheight, self.screenwidth = self._generate_screen()
@@ -39,6 +42,7 @@ class Screen:
         # Reduce font size
         return max_font_size - increment - 10
 
+    #Wrapper methods for calling
     def display_label(self, label):
         self.screen.blit(label.render, label.pos)
 
@@ -47,7 +51,8 @@ class Screen:
 
 
 
-
+#Appstate is a class to carry around a lot of the essential but boring information about the program's current state
+#Also has some methods to change info
 class Appstate:
     def __init__(self, screen):
         self.screen = screen
@@ -57,8 +62,13 @@ class Appstate:
             "orange":(255, 140, 0)
         }
         self.curr_detail = "AB"
+        self.main_menu_keys = None
+        self.countdown_keys = None
+        self.pause_keys = None
         self.sound = pygame.mixer.Sound([file for file in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))) if file.endswith("mp3")][0])
         self.pause = False
+        self.exit = False
+        self.skip = False
 
     def play_sound(self, times, delay=0.5):
         for _ in range(times):
@@ -77,31 +87,38 @@ class Appstate:
         pygame.display.update()
 
 
-
+#Initialises everything then calls main menu
 def main():
     pygame.init()
     pygame.time.Clock().tick(30)
     screen = Screen()
     appstate = Appstate(screen)
+    appstate.main_menu_keys, appstate.countdown_keys, appstate.pause_keys = generate_keymaps(appstate, Queue, Action, Countdown)
     main_menu(appstate)
 
 def main_menu(appstate):
-    running = True
-    print("Main menu")
-    print(f"Next detail: {appstate.curr_detail}")
-    appstate.screen.fill("red")
-    main_menu_keys = make_main_menu_keys(appstate)
+    printed = False
     next_detail_text = Label(str(f"Next:{appstate.curr_detail}"), "center", 400, appstate.screen)
     appstate.screen.display_label(next_detail_text)
-    pygame.display.update()
-    while running:
+    while True:
+        if not printed:
+            print("Main menu")
+            print(f"Next detail: {appstate.curr_detail}")
+            printed = True
+        appstate.screen.fill("red")
+        next_detail_text = Label(str(f"Next:{appstate.curr_detail}"), "center", 400, appstate.screen)
+        appstate.screen.display_label(next_detail_text)
+        pygame.display.update()
+
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                handle_keydown(event, main_menu_keys)
-                running = False
-    main_menu(appstate)
+            #If the result from state is None (key press not mapped, we want to act like its our first time in the menu)
+            if event.type == pygame.KEYDOWN:
+                state = handle_keydown(event, appstate.main_menu_keys)
+                if state == None:
+                    printed = False
+                    appstate.exit = False
+                    appstate.skip = False
+
+
 
 main()

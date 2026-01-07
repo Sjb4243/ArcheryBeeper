@@ -1,5 +1,8 @@
 import pygame
 from handle_keydown import handle_keydown
+
+#Could maybe separate this class out to have a base action then action with a countdown to account for collect
+#Seems like a lot of work for relatively little payoff atm
 class Action:
     def __init__(self, typeof, countdown, beeps, change_detail = False):
         self.type = typeof
@@ -10,23 +13,32 @@ class Action:
 
 
     def start(self, appstate):
+        #User feedback
         print(f"Entering {self.type}")
         appstate.play_sound(self.beeps)
-        state = self.countdown.start_countdown(appstate, type=self.type)
+        #Start the countdown that we instantiated action with
+        self.countdown.start_countdown(appstate, type=self.type)
+        #If change detail is True and its not already changed then we want to change it
         if not self.has_changed and self.change_detail:
             appstate.change_detail()
             self.has_changed = True
+        #If the pause key was pressed, changing appstate.pause then we enter the pause loop
         if appstate.pause == True:
-            self.pause()
-            appstate.pause = False
-        if state == "exit":
-            return "exit"
+            self.pause(appstate)
+        #if we hit exit, we want to go back to main menu
+        if appstate.exit:
+            return
+        #if we have skipped do nothing (cntinues to next iteration in queue)
+        if appstate.skip:
+            pass
 
-    def pause(self):
-        from maps import pause_keys
+
+    def pause(self, appstate):
         ready = False
         while not ready:
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
-                    skip = handle_keydown(event, pause_keys)
-                    ready = skip
+                    handle_keydown(event, appstate.pause_keys)
+                    #if we have chosen to skip we set ready to be true
+                    ready = appstate.skip
+        appstate.pause = False
