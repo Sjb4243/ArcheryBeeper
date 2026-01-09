@@ -26,7 +26,7 @@ def update_gui(root, pygame_to_tk_comm, button_map):
 def start_tk(pygame_to_tk_comm):
     root = tk.Tk()
     style = ttk.Style()
-    style.tk.call('source', "tkinit/azure.tcl")
+    style.tk.call('source', "tkinit/assets/azure.tcl")
     style.tk.call('set_theme', 'dark')
     root.configure(padx=10, pady=10)
     button_map = generate_buttons(root)
