@@ -1,6 +1,6 @@
 import pygame
 from handle_keydown import handle_keydown
-
+import time
 #Could maybe separate this class out to have a base action then action with a countdown to account for collect
 #Seems like a lot of work for relatively little payoff atm
 class Action:
@@ -15,8 +15,8 @@ class Action:
     def start(self, appstate):
         #User feedback
         print(f"Entering {self.type}")
-        appstate.play_sound(self.beeps)
         #Start the countdown that we instantiated action with
+        appstate.play_sound(self.beeps)
         self.countdown.start_countdown(appstate, type=self.type)
         #If change detail is True and its not already changed then we want to change it
         if not self.has_changed and self.change_detail:
@@ -31,6 +31,7 @@ class Action:
         #if we have skipped do nothing (cntinues to next iteration in queue)
         if appstate.skip:
             pass
+        time.sleep(0.2)
 
 
     def pause(self, appstate):

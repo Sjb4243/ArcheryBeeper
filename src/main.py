@@ -3,11 +3,11 @@ import sys
 import math
 import os
 import pygame
-from Queue import Queue
-from src.Countdown import Countdown
-from src.Action import Action
-from src.Label import Label
-from src.handle_keydown import handle_keydown
+from ActionQueue import ActionQueue
+from Countdown import Countdown
+from Action import Action
+from Label import Label
+from handle_keydown import handle_keydown
 from maps import generate_keymaps
 #Screen object for calculating a lot of font sizes
 #Also has some wrapper methods to make calling them a bit easier
@@ -66,6 +66,7 @@ class Appstate:
         self.countdown_keys = None
         self.pause_keys = None
         self.sound = pygame.mixer.Sound([file for file in os.listdir(os.path.dirname(os.path.abspath(sys.argv[0]))) if file.endswith("mp3")][0])
+        self.state = "main_menu"
         self.pause = False
         self.exit = False
         self.skip = False
@@ -93,7 +94,7 @@ def main():
     pygame.time.Clock().tick(30)
     screen = Screen()
     appstate = Appstate(screen)
-    appstate.main_menu_keys, appstate.countdown_keys, appstate.pause_keys = generate_keymaps(appstate, Queue, Action, Countdown)
+    appstate.main_menu_keys, appstate.countdown_keys, appstate.pause_keys = generate_keymaps(appstate, ActionQueue, Action, Countdown)
     main_menu(appstate)
 
 def main_menu(appstate):
@@ -105,6 +106,7 @@ def main_menu(appstate):
             print("Main menu")
             print(f"Next detail: {appstate.curr_detail}")
             printed = True
+            appstate.state = "main_menu"
         appstate.screen.fill("red")
         next_detail_text = Label(str(f"Next:{appstate.curr_detail}"), "center", 400, appstate.screen)
         appstate.screen.display_label(next_detail_text)

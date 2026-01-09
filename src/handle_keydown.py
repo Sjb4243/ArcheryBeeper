@@ -1,4 +1,5 @@
-from Queue import Queue
+from ActionQueue import ActionQueue
+
 
 #handling inputs
 #If there's no match return None so we know to do nothing later on
@@ -12,7 +13,7 @@ def handle_keydown(event, keymap):
         return None
     #Passing the state back to main menu, not even sure if this is needed
 
-    if isinstance(func, Queue):
+    if isinstance(func, ActionQueue):
         state = func.process_events()
         return state
     else:
