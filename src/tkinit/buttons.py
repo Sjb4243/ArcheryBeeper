@@ -12,8 +12,7 @@ class Buttongroup:
                 container.pack_forget()
             else:
                 container.pack(fill="x", pady=3)
-
-            button.regenerate_text()
+            button.regenerate_self()
         container.master.update_idletasks()
             
 class Keybutton(ttk.Checkbutton):
@@ -33,8 +32,9 @@ class Keybutton(ttk.Checkbutton):
         self.originaltext = text
         self.key = key
 
-    def regenerate_text(self):
+    def regenerate_self(self):
         self.config(text=self.originaltext)
+        self.state(["!selected"])
         
     def _inject_key(self):
         pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=self.key))
