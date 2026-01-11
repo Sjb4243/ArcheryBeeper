@@ -1,4 +1,5 @@
 from tkinter import ttk
+import tkinter as tk
 import pygame
 class Buttongroup:
     def __init__(self, buttons):
@@ -7,7 +8,6 @@ class Buttongroup:
     def update_buttons(self):
         for button in self.buttons:
             container = button.container
-
             if container.winfo_manager():
                 container.pack_forget()
             else:
@@ -18,13 +18,16 @@ class Buttongroup:
 class Keybutton(ttk.Checkbutton):
     def __init__(self, root, text, key):
         self.container = ttk.Frame(root, padding=5)
-
+        self.inactive_duration = 800
+        self.root = root
         self.style = 'Toggle.TButton'
+        self.var = tk.BooleanVar(value=False)
         super().__init__(
             self.container,
             text=text,
             style=self.style,
-            command=self.clicked
+            command=self.clicked,
+            variable=self.var
         )
 
         self.pack(fill="x")
@@ -34,25 +37,30 @@ class Keybutton(ttk.Checkbutton):
 
     def regenerate_self(self):
         self.config(text=self.originaltext)
-        self.state(["!selected"])
-        
+        self.var.set(False)
+
     def _inject_key(self):
         pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=self.key))
-        
+
+    def _disable_self(self):
+        self.config(state = "disabled")
+        self.root.after(self.inactive_duration, lambda: self.config(state="enabled"))
     def clicked(self):
         self._inject_key()
-        
+        self._disable_self()
+
         
 class Pausekeybutton(Keybutton):
     def __init__(self, root, text, key):
         super().__init__(root, text=text, key=key)
-
+        self.inactive_duration = 200
     def clicked(self):
         if self.cget("text") == self.originaltext:
             self.config(text="Pause requested")
         else:
             self.config(text = self.originaltext)
         self._inject_key()
+        self._disable_self()
 
 def generate_buttons(root):
 
@@ -85,7 +93,7 @@ def generate_buttons(root):
         ]),
 
         "pause": Buttongroup([
-            Keybutton(root, text="Next",
+            Keybutton(root, text="Unpause",
                       key=pygame.K_SPACE),
 
             Keybutton(root, text="Main menu",

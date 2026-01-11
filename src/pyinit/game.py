@@ -122,6 +122,7 @@ def main_menu(appstate):
                 state = handle_keydown(event, appstate.main_menu_keys)
                 if state == None:
                     printed = False
+                    appstate.pause = False
                     appstate.exit = False
                     appstate.skip = False
 

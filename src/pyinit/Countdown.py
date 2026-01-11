@@ -13,6 +13,8 @@ class Countdown:
         start = pygame.time.get_ticks()
         done = False
         while not done:
+            print(appstate.skip)
+            print(appstate.exit)
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     #keys are capable of interacting with various flags on appstate
