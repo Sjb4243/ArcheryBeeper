@@ -3,14 +3,13 @@ import pygame
 from src.pyinit.Label import Label
 
 class Countdown:
-    def __init__(self, length, skippable = True):
+    def __init__(self, length):
         self.length = length
-        self.skippable = skippable
 
     def start_countdown(self, appstate, type=None):
         if self.length == 0:
             return
-        appstate.update_state("countdown")
+        appstate.update_state(type)
         start = pygame.time.get_ticks()
         done = False
         while not done:
@@ -18,7 +17,7 @@ class Countdown:
                 if event.type == pygame.KEYDOWN:
                     #keys are capable of interacting with various flags on appstate
                     handle_keydown(event, appstate.countdown_keys)
-                    if appstate.skip and self.skippable:
+                    if appstate.skip:
                         return
                     if appstate.exit:
                         return

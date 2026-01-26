@@ -82,11 +82,18 @@ def generate_buttons(root):
                       key=pygame.K_ESCAPE)
         ]),
 
-        "countdown": Buttongroup([
+        "shooting": Buttongroup([
             Keybutton(root, text="Next",
                       key=pygame.K_SPACE),
             Pausekeybutton(root, text="Pause",
                       key=pygame.K_p),
+
+            Keybutton(root, text="Main menu",
+                      key=pygame.K_ESCAPE)
+        ]),
+        "walking": Buttongroup([
+            Pausekeybutton(root, text="Pause",
+                           key=pygame.K_p),
 
             Keybutton(root, text="Main menu",
                       key=pygame.K_ESCAPE)

@@ -24,7 +24,7 @@ def generate_keymaps(appstate, ActionQueue, Action, Countdown):
         pygame.K_SPACE: lambda: handle_space(),
         pygame.K_ESCAPE: lambda: handle_escape()
     }
-    walking_count = Countdown(10, skippable = False)
+    walking_count = Countdown(10)
     shooting_count = Countdown(120)
     # We just want the beeping, I could have a base action class to avoid a lot of this specific stuff
     collect_count = Countdown(0)
