@@ -20,12 +20,13 @@ class Action:
         appstate.play_sound(self.beeps)
         self.countdown.start_countdown(appstate, type=self.type)
         #If change detail is True and its not already changed then we want to change it
+        if self.change_detail and self.has_changed == False:
+            appstate.change_detail()
+            self.has_changed = True
         #if we hit exit, we want to go back to main menu
         if appstate.exit:
             return
-        if not self.has_changed and self.change_detail:
-            appstate.change_detail()
-            self.has_changed = True
+
         #If the pause key was pressed, changing appstate.pause then we enter the pause loop
         if appstate.pause == True:
             self.pause(appstate)
@@ -37,7 +38,6 @@ class Action:
 
     def pause(self, appstate):
         ready = False
-        print("helo")
         appstate.update_state("pause")
         while not ready:
             for event in pygame.event.get():

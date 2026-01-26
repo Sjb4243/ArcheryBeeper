@@ -10,8 +10,11 @@ class ActionQueue:
             #if escape was ever pressed we want to return to the main menu
             obj.start(self.appstate)
             if self.appstate.exit:
-                return
+                break
             time.sleep(0.5)
+        #fix for bug where after one run the details dont change properly
+        for obj in self.events:
+            obj.has_changed = False
 
 
 

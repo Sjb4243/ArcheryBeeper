@@ -124,7 +124,7 @@ def main_menu(appstate):
                     printed = False
                     appstate.pause = False
                     appstate.exit = False
-                    appstate.skip = False
+
 
 
 

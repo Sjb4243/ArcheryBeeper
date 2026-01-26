@@ -18,7 +18,7 @@ class Buttongroup:
 class Keybutton(ttk.Checkbutton):
     def __init__(self, root, text, key):
         self.container = ttk.Frame(root, padding=5)
-        self.inactive_duration = 800
+        self.inactive_duration = 2000
         self.root = root
         self.style = 'Toggle.TButton'
         self.var = tk.BooleanVar(value=False)
