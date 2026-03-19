@@ -3,12 +3,12 @@ import sys
 import math
 import os
 import pygame
-from src.pyinit.ActionQueue import ActionQueue
-from src.pyinit.Countdown import Countdown
-from src.pyinit.Action import Action
-from src.pyinit.Label import Label
-from src.pyinit.handle_keydown import handle_keydown
-from src.pyinit.maps import generate_keymaps
+from .ActionQueue import ActionQueue
+from .Countdown import Countdown
+from .Action import Action
+from .Label import Label
+from .handle_keydown import handle_keydown
+from .maps import generate_keymaps
 #Screen object for calculating a lot of font sizes
 #Also has some wrapper methods to make calling them a bit easier
 class Screen:

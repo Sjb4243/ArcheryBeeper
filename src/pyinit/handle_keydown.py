@@ -1,4 +1,4 @@
-from src.pyinit.ActionQueue import ActionQueue
+from .ActionQueue import ActionQueue
 
 
 #handling inputs

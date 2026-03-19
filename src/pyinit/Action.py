@@ -1,5 +1,5 @@
 import pygame
-from src.pyinit.handle_keydown import handle_keydown
+from .handle_keydown import handle_keydown
 import time
 #Could maybe separate this class out to have a base action then action with a countdown to account for collect
 #Seems like a lot of work for relatively little payoff atm
