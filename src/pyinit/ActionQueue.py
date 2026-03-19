@@ -1,4 +1,5 @@
 import time
+import os
 #Queue object that just goes through each arg and runs the start method on it
 class ActionQueue:
     def __init__(self,appstate,*events):
@@ -15,6 +16,3 @@ class ActionQueue:
         #fix for bug where after one run the details dont change properly
         for obj in self.events:
             obj.has_changed = False
-
-
-

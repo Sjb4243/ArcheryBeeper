@@ -1,5 +1,5 @@
 import tkinter as tk
-from src.tkinit.buttons import generate_buttons
+from .buttons import generate_buttons
 from tkinter import ttk
 import os
 

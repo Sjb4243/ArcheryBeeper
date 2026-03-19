@@ -1,6 +1,6 @@
-from src.pyinit.handle_keydown import handle_keydown
+from .handle_keydown import handle_keydown
 import pygame
-from src.pyinit.Label import Label
+from .Label import Label
 
 class Countdown:
     def __init__(self, length):

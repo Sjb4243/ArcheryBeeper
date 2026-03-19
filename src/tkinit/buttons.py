@@ -56,7 +56,7 @@ class Pausekeybutton(Keybutton):
         self.inactive_duration = 200
     def clicked(self):
         if self.cget("text") == self.originaltext:
-            self.config(text="Pause requested")
+            self.config(text="Wait requested")
         else:
             self.config(text = self.originaltext)
         self._inject_key()
@@ -85,14 +85,14 @@ def generate_buttons(root):
         "shooting": Buttongroup([
             Keybutton(root, text="Next",
                       key=pygame.K_SPACE),
-            Pausekeybutton(root, text="Pause",
+            Pausekeybutton(root, text="Wait after countdown",
                       key=pygame.K_p),
 
             Keybutton(root, text="Main menu",
                       key=pygame.K_ESCAPE)
         ]),
         "walking": Buttongroup([
-            Pausekeybutton(root, text="Pause",
+            Pausekeybutton(root, text="Wait after countdown",
                            key=pygame.K_p),
 
             Keybutton(root, text="Main menu",
@@ -100,7 +100,7 @@ def generate_buttons(root):
         ]),
 
         "pause": Buttongroup([
-            Keybutton(root, text="Unpause",
+            Keybutton(root, text="Next",
                       key=pygame.K_SPACE),
 
             Keybutton(root, text="Main menu",
