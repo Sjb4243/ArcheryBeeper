@@ -3,7 +3,7 @@ import threading
 import queue
 import pygame
 from flask_socketio import SocketIO, emit
-
+import dbus
 
 def queue_watcher(commqueue, socketio, state_store, state_lock):
     while True:
@@ -20,6 +20,11 @@ def queue_watcher(commqueue, socketio, state_store, state_lock):
             print("Error emitting state:", e)
 
 def start_flask(commqueue):
+    global iface
+    bus = dbus.SessionBus()
+    spotify = bus.get_object("org.mpris.MediaPlayer2.spotify",
+                             "/org/mpris/MediaPlayer2")
+    iface = dbus.Interface(spotify, "org.mpris.MediaPlayer2.Player")
     app = Flask(__name__, static_url_path='/static')
     global socketio
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")  # Allow JS from any origin
@@ -41,6 +46,11 @@ def start_flask(commqueue):
         "1": pygame.K_1,
         "c": pygame.K_c,
     }
+
+    @app.route("/control_music", methods=["POST"])
+    def control_music():
+        iface.PlayPause()
+        return ("", 204)
 
     @app.route("/")
     def index():
@@ -64,6 +74,7 @@ def start_flask(commqueue):
         pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=key_map[key]))
         return ("", 204)
     socketio.run(app, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
+
 
 
 

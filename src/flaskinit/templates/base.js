@@ -35,6 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="hidden" name="key" value="c">
                 <button class="menu-button" type="submit">Collect</button>
             </form>
+            <form class="menu-form" action="/control_music" method="post">
+                <input type="hidden" name="key" value="escape">
+                <button class="menu-button" type="submit">Play/Pause music</button>
+            </form>
             <form class="menu-form" action="/send_pygame" method="post">
                 <input type="hidden" name="key" value="escape">
                 <button class="menu-button" type="submit">Quit</button>
