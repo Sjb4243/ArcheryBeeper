@@ -5,11 +5,13 @@ import pygame
 from flask_socketio import SocketIO, emit
 
 
-def queue_watcher(commqueue, socketio):
+def queue_watcher(commqueue, socketio, state_store, state_lock):
     while True:
         try:
             state = commqueue.get(timeout=0.5)
             print(f"STATE IS {state}")
+            with state_lock:
+                state_store["current_state"] = state
             # Emit an event to all connected clients
             socketio.emit("update_ui", {"state": state})
         except queue.Empty:
@@ -18,18 +20,26 @@ def queue_watcher(commqueue, socketio):
             print("Error emitting state:", e)
 
 def start_flask(commqueue):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static')
     global socketio
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")  # Allow JS from any origin
 
+    state_store = {"current_state": "main_menu"}
+    state_lock = threading.Lock()
 
-    threading.Thread(target=queue_watcher, daemon=True, args=(commqueue, socketio,)).start()
+    threading.Thread(
+        target=queue_watcher,
+        daemon=True,
+        args=(commqueue, socketio, state_store, state_lock),
+    ).start()
     key_map = {
         "f": pygame.K_f,
         "space": pygame.K_SPACE,
         "d": pygame.K_d,
         "p": pygame.K_p,
-        "escape": pygame.K_ESCAPE
+        "escape": pygame.K_ESCAPE,
+        "1": pygame.K_1,
+        "c": pygame.K_c,
     }
 
     @app.route("/")
@@ -39,6 +49,9 @@ def start_flask(commqueue):
     @socketio.on("connect")
     def handle_connect():
         print("Socket client connected")
+        with state_lock:
+            current_state = state_store["current_state"]
+        emit("update_ui", {"state": current_state})
 
     @socketio.on("disconnect")
     def handle_disconnect():
@@ -48,10 +61,8 @@ def start_flask(commqueue):
     @app.route("/send_pygame", methods=["POST"])
     def send_pygame():
         key = request.form.get("key")
-        if key in key_map:
-            pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=key_map[key]))
-        return ("", 204)  # No content response
-        # --- Start the server ---
+        pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=key_map[key]))
+        return ("", 204)
     socketio.run(app, host="0.0.0.0", port=8000, allow_unsafe_werkzeug=True)
 
 
