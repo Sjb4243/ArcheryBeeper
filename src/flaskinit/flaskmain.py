@@ -21,10 +21,14 @@ def queue_watcher(commqueue, socketio, state_store, state_lock):
 
 def start_flask(commqueue):
     global iface
-    bus = dbus.SessionBus()
-    spotify = bus.get_object("org.mpris.MediaPlayer2.spotify",
-                             "/org/mpris/MediaPlayer2")
-    iface = dbus.Interface(spotify, "org.mpris.MediaPlayer2.Player")
+    try:
+        bus = dbus.SessionBus()
+        spotify = bus.get_object("org.mpris.MediaPlayer2.spotify",
+                                "/org/mpris/MediaPlayer2")
+        iface = dbus.Interface(spotify, "org.mpris.MediaPlayer2.Player")
+    except: 
+        print(f"Spotify not open! turning this feature off")
+        spotify = None
     app = Flask(__name__, static_url_path='/static')
     global socketio
     socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")  # Allow JS from any origin
@@ -49,12 +53,27 @@ def start_flask(commqueue):
 
     @app.route("/control_music", methods=["POST"])
     def control_music():
-        iface.PlayPause()
-        return ("", 204)
+        if spotify:
+            iface.PlayPause()
+            return ("", 204)
+
+    @app.route('/client_logs', methods=['POST'])
+    def client_logs():
+        try:
+            data = request.get_json(force=True)
+        except Exception:
+            data = {'raw': request.data.decode('utf-8', errors='replace')}
+        try:
+            with open('client_logs.txt', 'a') as f:
+                f.write(f"--- {request.remote_addr} {request.method} {request.path} {request.environ.get('REMOTE_ADDR')} {__import__('time').ctime()} ---\n")
+                f.write(str(data) + "\n")
+        except Exception as e:
+            print('Failed to write client logs:', e)
+        return ('', 204)
 
     @app.route("/")
     def index():
-        return render_template("base.js")
+        return render_template("base.html")
 
     @socketio.on("connect")
     def handle_connect():

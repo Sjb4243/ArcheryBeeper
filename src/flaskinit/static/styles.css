@@ -31,6 +31,15 @@
     background-color: #45a049;
 }
 
+.menu-button.holding {
+    background-color: #2e7d32;
+}
+
+/* improve touch handling on mobile */
+.menu-button {
+    touch-action: manipulation;
+}
+
 @media (max-width: 768px) {
     #dynamic-content {
         padding: 12px;

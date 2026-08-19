@@ -1,8 +1,8 @@
-from src.pyinit.game import start_pygame
+from pyinit.game import start_pygame
 import threading
 from queue import Queue
-from src.tkinit.tkwindow import start_tk
-from src.flaskinit.flaskmain import start_flask
+from tkinit.tkwindow import start_tk
+from flaskinit.flaskmain import start_flask
 
 
 def main():
