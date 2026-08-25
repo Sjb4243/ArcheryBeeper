@@ -3,7 +3,6 @@ import threading
 import queue
 import pygame
 from flask_socketio import SocketIO, emit
-import dbus
 
 def queue_watcher(commqueue, socketio, state_store, state_lock):
     while True:
@@ -22,6 +21,7 @@ def queue_watcher(commqueue, socketio, state_store, state_lock):
 def start_flask(commqueue):
     global iface
     try:
+        import dbus
         bus = dbus.SessionBus()
         spotify = bus.get_object("org.mpris.MediaPlayer2.spotify",
                                 "/org/mpris/MediaPlayer2")
